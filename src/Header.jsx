@@ -6,7 +6,7 @@ const Header = ({ value, onChange }) => {
     return <div className={styles.Header}>
         <span>Jenkinsfile.format(indent&nbsp;=&nbsp;</span>
         <input type='button' value='2' disabled={indent === 2} onClick={() => {
-            onChange({ indent: 2 })
+            onChange({ indent: 2 })            
         }} />
         <span>&nbsp;/&nbsp;</span>
         <input type='button' value='4' disabled={indent === 4} onClick={() => {

@@ -26,15 +26,26 @@ function MyEditor({ indent = 2 }) {
                 break;
             }
         }
-        if (currentIndent !== indent) {
-            // 2 => 4
-            if (currentIndent === 2) {
-                return formated.replaceAll(" ".repeat(2), " ".repeat(4));
-            }
-            // 4 => 2
-            return formated.replaceAll(" ".repeat(4), " ".repeat(2));
+        if (currentIndent === indent) {
+            return formated;
         }
-        return formated
+        const indentRegex = /^ +/
+        const indented = [];
+        for (let index = 0; index < lines.length; index++) {
+            const line = lines[index];
+            const found = line.match(indentRegex);
+            if (found) {
+                const blankSize = found[0].length;
+                if (currentIndent == 2) { // 2 ==> 4
+                    indented.push(line.replace(new RegExp("^" + found[0]), " ".repeat(blankSize * 2)))
+                } else { // 4 ==> 2
+                    indented.push(line.replace(new RegExp("^" + found[0]), " ".repeat(blankSize / 2)))
+                }
+            } else {
+                indented.push(line);
+            }
+        }
+        return indented.join("\n")
     };
 
     const formatAndSetValue = async (newValue) => {

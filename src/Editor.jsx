@@ -13,40 +13,43 @@ const MyEditor = forwardRef(function MyEditor({ indent = 2 }, ref) {
         const formated = await prettier.format(code, {
             parser: "groovy",
             plugins: [groovyPlugin],
-        })
+        });
+
         const lines = formated.split("\n");
-        let currentIndent = 2;
-        for (let index = 0; index < lines.length; index++) {
-            const line = lines[index];
-            if (line.startsWith(" ".repeat(4))) {
-                currentIndent = 4;
-                break;
+
+        // Pass 1: determine depth for each non-empty line
+        // by comparing its original indent with the previous non-empty line
+        const depths = new Array(lines.length).fill(0);
+        let prevIndent = 0;
+        let currentDepth = 0;
+        for (let i = 0; i < lines.length; i++) {
+            const trimmed = lines[i].trim();
+            if (!trimmed) {
+                depths[i] = -1; // mark empty
+                continue;
             }
-            if (line.startsWith(" ".repeat(2))) {
-                currentIndent = 2;
-                break;
+            const leadingSpaces = lines[i].length - lines[i].trimStart().length;
+            if (leadingSpaces > prevIndent) {
+                currentDepth++;
+            } else if (leadingSpaces < prevIndent) {
+                currentDepth = Math.max(0, currentDepth - 1);
             }
+            // equal => depth unchanged
+            depths[i] = currentDepth;
+            prevIndent = leadingSpaces;
         }
-        if (currentIndent === indent) {
-            return formated;
-        }
-        const indentRegex = /^ +/
-        const indented = [];
-        for (let index = 0; index < lines.length; index++) {
-            const line = lines[index];
-            const found = line.match(indentRegex);
-            if (found) {
-                const blankSize = found[0].length;
-                if (currentIndent == 2) { // 2 ==> 4
-                    indented.push(line.replace(new RegExp("^" + found[0]), " ".repeat(blankSize * 2)))
-                } else { // 4 ==> 2
-                    indented.push(line.replace(new RegExp("^" + found[0]), " ".repeat(blankSize / 2)))
-                }
+
+        // Pass 2: re-indent each line using our own indent size
+        const result = [];
+        for (let i = 0; i < lines.length; i++) {
+            const trimmed = lines[i].trim();
+            if (!trimmed) {
+                result.push("");
             } else {
-                indented.push(line);
+                result.push(" ".repeat(depths[i] * indent) + trimmed);
             }
         }
-        return indented.join("\n")
+        return result.join("\n");
     };
 
     const handleFormat = async () => {
@@ -100,7 +103,7 @@ const MyEditor = forwardRef(function MyEditor({ indent = 2 }, ref) {
             <div className={styles.panel}>
                 <div className={styles.panelTitle}>Input</div>
                 <Editor
-                    height="calc(100vh - 72px)"
+                    height="calc(100vh - 100px)"
                     width="100%"
                     language="tcl"
                     onMount={handleInputMount}
@@ -111,7 +114,7 @@ const MyEditor = forwardRef(function MyEditor({ indent = 2 }, ref) {
             <div className={styles.panel}>
                 <div className={styles.panelTitle}>Output</div>
                 <Editor
-                    height="calc(100vh - 72px)"
+                    height="calc(100vh - 100px)"
                     width="100%"
                     language="tcl"
                     onMount={handleOutputMount}

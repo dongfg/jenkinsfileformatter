@@ -1,5 +1,6 @@
 import MyEditor from './Editor'
 import Header from './Header'
+import Footer from './Footer'
 import './App.css'
 import { useState, useEffect, useRef } from 'react';
 
@@ -24,6 +25,7 @@ function App() {
         }}
       />
       <MyEditor ref={editorRef} indent={indent} />
+      <Footer />
     </div>
   )
 }

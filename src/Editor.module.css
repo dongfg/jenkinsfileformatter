@@ -1,7 +1,7 @@
 .editorContainer {
   display: flex;
   width: 100%;
-  height: calc(100vh - 48px);
+  height: calc(100vh - 48px - 28px);
 }
 
 .panel {

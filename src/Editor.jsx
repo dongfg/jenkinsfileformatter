@@ -101,7 +101,7 @@ const MyEditor = forwardRef(function MyEditor({ indent = 2 }, ref) {
     return (
         <div className={styles.editorContainer}>
             <div className={styles.panel}>
-                <div className={styles.panelTitle}>Input</div>
+                <div className={styles.panelTitle}>Input / 输入</div>
                 <Editor
                     height="calc(100vh - 100px)"
                     width="100%"
@@ -109,10 +109,11 @@ const MyEditor = forwardRef(function MyEditor({ indent = 2 }, ref) {
                     onMount={handleInputMount}
                     onChange={handleInputChange}
                     theme="vs-dark"
+                    aria-label="Input Jenkinsfile code editor"
                 />
             </div>
             <div className={styles.panel}>
-                <div className={styles.panelTitle}>Output</div>
+                <div className={styles.panelTitle}>Output / 输出</div>
                 <Editor
                     height="calc(100vh - 100px)"
                     width="100%"
@@ -120,6 +121,7 @@ const MyEditor = forwardRef(function MyEditor({ indent = 2 }, ref) {
                     onMount={handleOutputMount}
                     theme="vs-dark"
                     options={{ readOnly: true }}
+                    aria-label="Formatted Jenkinsfile output viewer"
                 />
             </div>
         </div>

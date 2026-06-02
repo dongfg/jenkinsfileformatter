@@ -9,6 +9,20 @@
   position: relative;
 }
 
+.title {
+  font-size: 16pt;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.indentGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
 .githubBadge {
   position: absolute;
   right: 16px;

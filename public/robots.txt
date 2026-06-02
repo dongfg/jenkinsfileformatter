@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jenkinsfileformatter.vercel.app/sitemap.xml

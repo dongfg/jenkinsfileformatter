@@ -1,12 +1,13 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import Editor from '@monaco-editor/react';
 import * as prettier from "prettier";
 import * as groovyPlugin from "prettier-plugin-groovy";
+import styles from './Editor.module.css';
 
-function MyEditor({ indent = 2 }) {
-    const editorRef = useRef(null);
-    const timerRef = useRef(null);
-    const formattedContentRef = useRef("");
+const MyEditor = forwardRef(function MyEditor({ indent = 2 }, ref) {
+    const inputEditorRef = useRef(null);
+    const outputEditorRef = useRef(null);
+    const inputContentRef = useRef("");
 
     const formatCode = async (code) => {
         const formated = await prettier.format(code, {
@@ -48,61 +49,78 @@ function MyEditor({ indent = 2 }) {
         return indented.join("\n")
     };
 
-    const formatAndSetValue = async (newValue) => {
-        const formattedContent = await formatCode(newValue);
-        formattedContentRef.current = formattedContent;
-
-        if (formattedContent !== newValue) {
-            editorRef.current.setValue(formattedContent)
-            localStorage.setItem("content", formattedContent)
-        }
-    }
-
-    const handleEditorChange = (newValue, event) => {
-        if (timerRef.current) {
-            clearTimeout(timerRef.current);
-        }
-        timerRef.current = setTimeout(async () => {
-            formatAndSetValue(newValue)
-        }, 500);
-
+    const handleFormat = async () => {
+        const code = inputContentRef.current;
+        if (!code || !outputEditorRef.current) return;
+        const formatted = await formatCode(code);
+        outputEditorRef.current.setValue(formatted);
+        localStorage.setItem("content", code);
     };
 
+    useImperativeHandle(ref, () => ({
+        format: handleFormat,
+    }));
+
+    // Re-format when indent changes
+    useEffect(() => {
+        if (outputEditorRef.current && inputContentRef.current) {
+            handleFormat();
+        }
+    }, [indent]);
 
     useEffect(() => {
         return () => {
-            if (editorRef.current) {
-                // 清理事件监听器
-                editorRef.current.dispose();
+            if (inputEditorRef.current) {
+                inputEditorRef.current.dispose();
+            }
+            if (outputEditorRef.current) {
+                outputEditorRef.current.dispose();
             }
         };
     }, []);
 
-    useEffect(() => {
-        if (!editorRef.current) {
-            return;
-        }
-        formatAndSetValue(formattedContentRef.current);
-    }, [indent])
+    const handleInputChange = (newValue) => {
+        inputContentRef.current = newValue;
+        localStorage.setItem("content", newValue);
+    };
 
-    const handleEditorDidMount = (editor, monaco) => {
-        editorRef.current = editor;
-        const historyContent = localStorage.getItem("content") || ""
-        editorRef.current.setValue(historyContent);
-        formattedContentRef.current = historyContent;
+    const handleInputMount = (editor) => {
+        inputEditorRef.current = editor;
+        const historyContent = localStorage.getItem("content") || "";
+        editor.setValue(historyContent);
+        inputContentRef.current = historyContent;
+    };
+
+    const handleOutputMount = (editor) => {
+        outputEditorRef.current = editor;
     };
 
     return (
-        <div>
-            <Editor
-                height="calc(100vh - 48px)"
-                width="100vw"
-                language="tcl"
-                onMount={handleEditorDidMount}
-                onChange={handleEditorChange}
-            />
+        <div className={styles.editorContainer}>
+            <div className={styles.panel}>
+                <div className={styles.panelTitle}>Input</div>
+                <Editor
+                    height="calc(100vh - 72px)"
+                    width="100%"
+                    language="tcl"
+                    onMount={handleInputMount}
+                    onChange={handleInputChange}
+                    theme="vs-dark"
+                />
+            </div>
+            <div className={styles.panel}>
+                <div className={styles.panelTitle}>Output</div>
+                <Editor
+                    height="calc(100vh - 72px)"
+                    width="100%"
+                    language="tcl"
+                    onMount={handleOutputMount}
+                    theme="vs-dark"
+                    options={{ readOnly: true }}
+                />
+            </div>
         </div>
     );
-}
+});
 
 export default MyEditor;

@@ -1,18 +1,22 @@
 import styles from './Header.module.css';
 
-const Header = ({ value, onChange }) => {
+const Header = ({ value, onChange, onFormat }) => {
     const { indent } = value;
 
     return <div className={styles.Header}>
-        <span>Jenkinsfile.format(indent&nbsp;=&nbsp;</span>
-        <input type='button' value='2' disabled={indent === 2} onClick={() => {
-            onChange({ indent: 2 })            
-        }} />
+        <img src="/logo.png" alt="Jenkins" className={styles.logo} />
+        Jenkinsfile.
+        <button className={styles.formatBtn} onClick={onFormat}>Format</button>
+        (
+        <span>indent&nbsp;=&nbsp;</span>
+        <button className={styles.indentBtn} disabled={indent === 2} onClick={() => {
+            onChange({ indent: 2 })
+        }}>2 Spaces</button>
         <span>&nbsp;/&nbsp;</span>
-        <input type='button' value='4' disabled={indent === 4} onClick={() => {
+        <button className={styles.indentBtn} disabled={indent === 4} onClick={() => {
             onChange({ indent: 4 })
-        }} />
-        <span>)</span>
+        }}>4 Spaces</button>
+        )
     </div>;
 };
 

@@ -1,4 +1,28 @@
-.Editor {
-  width: 100vw;
-  height: 100vh;
+.editorContainer {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 48px);
+}
+
+.panel {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel:first-child {
+  border-right: 2px solid #2d2d2d;
+}
+
+.panelTitle {
+  background-color: #1e1e1e;
+  color: #cccccc;
+  padding: 4px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #333;
 }

@@ -9,6 +9,14 @@ const Footer = () => {
                 . Attribution to{' '}
                 <a href="https://jenkins.io/" target="_blank" rel="noopener">Jenkins</a>.
             </p>
+            <p>
+                Built with{' '}
+                <a href="https://prettier.io/" target="_blank" rel="noopener">Prettier</a>,{' '}
+                <a href="https://github.com/mharbison72/prettier-plugin-groovy" target="_blank" rel="noopener">prettier-plugin-groovy</a>,{' '}
+                <a href="https://github.com/suren-atoyan/monaco-react" target="_blank" rel="noopener">@monaco-editor/react</a>,{' '}
+                <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a>, and{' '}
+                <a href="https://vercel.com/" target="_blank" rel="noopener">Vercel</a>.
+            </p>
         </footer>
     );
 };
